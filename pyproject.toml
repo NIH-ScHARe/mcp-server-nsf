@@ -1,0 +1,22 @@
+[project]
+name = "nsf-mcp-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp>=3.1.0",
+    "numpy>=2.4.3",
+    "pydantic>=2.12.5",
+    "pytest>=9.0.2",
+    "python-dotenv>=1.2.2",
+    "requests>=2.32.5",
+    "sentence-transformers>=5.3.0",
+]
+
+[project.scripts]
+nsf-mcp = "nsf_mcp.server:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
