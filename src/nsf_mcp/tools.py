@@ -20,102 +20,103 @@ from .api import search_awards
 from .models import Award
 from .search import semantic_search
 
-mcp = FastMCP("NSF Research Explorer")
+
+def register_tools(mcp: FastMCP) -> None:
+    """Register all grants.gov tools on the MCP server."""
+
+    @mcp.tool()
+    async def search_awards_tool(keyword: str):
+        """
+        Basic NSF keyword search.
+
+        This tool performs a simple keyword search
+        using the NSF API.
+
+        Example
+        -------
+
+        search_awards_tool("machine learning")
+
+        Returns
+        -------
+        List of award titles and institutions.
+        """
+
+        raw = await search_awards(keyword)
+
+        awards = [Award.from_api(x) for x in raw]
+
+        return [
+            {
+                "title": a.title,
+                "institution": a.institution,
+                "funding": a.funding,
+            }
+            for a in awards
+        ]
 
 
-@mcp.tool()
-def search_awards_tool(keyword: str):
-    """
-    Basic NSF keyword search.
+    @mcp.tool()
+    async def semantic_award_search(query: str):
+        """
+        Semantic search for NSF awards.
 
-    This tool performs a simple keyword search
-    using the NSF API.
+        Unlike keyword search, semantic search finds
+        research that is conceptually related.
 
-    Example
-    -------
+        Example
+        -------
 
-    search_awards_tool("machine learning")
+        Query:
+            "AI for hospitals"
 
-    Returns
-    -------
-    List of award titles and institutions.
-    """
+        Could return research about:
 
-    raw = search_awards(keyword)
+            "machine learning in healthcare"
+            "predictive models for patient data"
 
-    awards = [Award.from_api(x) for x in raw]
+        because embeddings capture meaning.
+        """
 
-    return [
-        {
-            "title": a.title,
-            "institution": a.institution,
-            "funding": a.funding,
-        }
-        for a in awards
-    ]
+        raw = await search_awards(query)
 
+        awards = [Award.from_api(x) for x in raw]
 
-@mcp.tool()
-def semantic_award_search(query: str):
-    """
-    Semantic search for NSF awards.
+        ranked = semantic_search(query, awards)
 
-    Unlike keyword search, semantic search finds
-    research that is conceptually related.
-
-    Example
-    -------
-
-    Query:
-        "AI for hospitals"
-
-    Could return research about:
-
-        "machine learning in healthcare"
-        "predictive models for patient data"
-
-    because embeddings capture meaning.
-    """
-
-    raw = search_awards(query)
-
-    awards = [Award.from_api(x) for x in raw]
-
-    ranked = semantic_search(query, awards)
-
-    return [a.title for a in ranked[:5]]
+        return [a.title for a in ranked[:5]]
 
 
-@mcp.tool()
-def analyze_institutions(keyword: str):
-    """
-    Analyze which institutions receive NSF funding
-    for a given research area.
+    @mcp.tool()
+    async def analyze_institutions(keyword: str):
+        """
+        Analyze which institutions receive NSF funding
+        for a given research area.
 
-    This tool is useful for research analytics.
+        This tool is useful for research analytics.
 
-    Example
-    -------
+        Example
+        -------
 
-    analyze_institutions("machine learning")
+        analyze_institutions("machine learning")
 
-    Returns
-    -------
+        Returns
+        -------
 
-    A dictionary mapping institutions to
-    total funding amounts.
-    """
+        A dictionary mapping institutions to
+        total funding amounts.
+        """
 
-    raw = search_awards(keyword, 20)
+        raw = await search_awards(keyword, 20)
 
-    awards = [Award.from_api(x) for x in raw]
+        awards = [Award.from_api(x) for x in raw]
 
-    totals = {}
+        totals = {}
 
-    for a in awards:
+        for a in awards:
 
-        totals.setdefault(a.institution, 0)
+            totals.setdefault(a.institution, 0)
 
-        totals[a.institution] += a.funding
+            totals[a.institution] += a.funding
 
-    return totals
+        return totals
