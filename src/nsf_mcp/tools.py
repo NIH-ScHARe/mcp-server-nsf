@@ -56,35 +56,35 @@ def register_tools(mcp: FastMCP) -> None:
         ]
 
 
-    @mcp.tool()
-    async def semantic_award_search(query: str):
-        """
-        Semantic search for NSF awards.
+    # @mcp.tool()
+    # async def semantic_award_search(query: str):
+    #     """
+    #     Semantic search for NSF awards.
 
-        Unlike keyword search, semantic search finds
-        research that is conceptually related.
+    #     Unlike keyword search, semantic search finds
+    #     research that is conceptually related.
 
-        Example
-        -------
+    #     Example
+    #     -------
 
-        Query:
-            "AI for hospitals"
+    #     Query:
+    #         "AI for hospitals"
 
-        Could return research about:
+    #     Could return research about:
 
-            "machine learning in healthcare"
-            "predictive models for patient data"
+    #         "machine learning in healthcare"
+    #         "predictive models for patient data"
 
-        because embeddings capture meaning.
-        """
+    #     because embeddings capture meaning.
+    #     """
 
-        raw = await search_awards(query)
+    #     raw = await search_awards(query)
 
-        awards = [Award.from_api(x) for x in raw]
+    #     awards = [Award.from_api(x) for x in raw]
 
-        ranked = semantic_search(query, awards)
+    #     ranked = semantic_search(query, awards)
 
-        return [a.title for a in ranked[:5]]
+    #     return [a.title for a in ranked[:5]]
 
 
     @mcp.tool()

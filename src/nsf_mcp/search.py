@@ -1,48 +1,48 @@
-"""
-Semantic search utilities.
+# """
+# Semantic search utilities.
 
-This module performs similarity comparisons between
-query embeddings and NSF award embeddings.
-"""
+# This module performs similarity comparisons between
+# query embeddings and NSF award embeddings.
+# """
 
-import numpy as np
-from .embeddings import embed_text
-
-
-def cosine_similarity(a, b):
-    """
-    Compute cosine similarity between two vectors.
-    """
-
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+# import numpy as np
+# from .embeddings import embed_text
 
 
-def semantic_search(query, awards):
-    """
-    Perform semantic search across a list of awards.
+# def cosine_similarity(a, b):
+#     """
+#     Compute cosine similarity between two vectors.
+#     """
 
-    Steps
-    -----
+#     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-    1. Embed the query text
-    2. Embed each award abstract
-    3. Compute similarity scores
-    4. Return the most similar awards
-    """
 
-    query_vec = embed_text(query)
+# def semantic_search(query, awards):
+#     """
+#     Perform semantic search across a list of awards.
 
-    scored = []
+#     Steps
+#     -----
 
-    for award in awards:
-        text = award.title + " " + award.abstract
+#     1. Embed the query text
+#     2. Embed each award abstract
+#     3. Compute similarity scores
+#     4. Return the most similar awards
+#     """
 
-        vec = embed_text(text)
+#     query_vec = embed_text(query)
 
-        score = cosine_similarity(query_vec, vec)
+#     scored = []
 
-        scored.append((score, award))
+#     for award in awards:
+#         text = award.title + " " + award.abstract
 
-    scored.sort(reverse=True)
+#         vec = embed_text(text)
 
-    return [a for _, a in scored]
+#         score = cosine_similarity(query_vec, vec)
+
+#         scored.append((score, award))
+
+#     scored.sort(reverse=True)
+
+#     return [a for _, a in scored]
